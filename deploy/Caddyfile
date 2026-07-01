@@ -11,9 +11,11 @@ downsizer.example.com {
 		reverse_proxy 127.0.0.1:8080
 	}
 
-	# Dashboard (Next.js) — everything else.
+	# Dashboard — static export (ui/out) served directly. No Node runtime.
 	handle {
-		reverse_proxy 127.0.0.1:3000
+		root * /var/www/paseo-downsizer
+		try_files {path} {path}/ /index.html
+		file_server
 	}
 
 	# Optional: basic security headers for the dashboard.

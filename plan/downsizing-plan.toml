@@ -20,9 +20,11 @@
 
 [meta]
 name = "paseo-relay-downsizing"
-# Intended start: Thursday 2 July 2026, 12:00 CEST (10:00 UTC). era_offsets below
-# are relative to when the service is started, so launch it at that time.
-# Milestones: floor(20) Fri 3 Jul 12:00 CEST · shutdown Sat 4 Jul 12:00 CEST.
+# Go-live: the service ARMS immediately (serves the dashboard, holds) and starts
+# the schedule automatically at this instant — no manual trigger. Absolute, so a
+# restart before then re-arms safely. Pause/stop any time via /api/control.
+# Milestones from here: floor(20) Fri 3 Jul 12:00 CEST · shutdown Sat 4 Jul 12:00 CEST.
+start_at = "2026-07-02T12:00:00+02:00"   # Thursday 2 July 2026, 12:00 CEST
 relay_ws = "wss://paseo-rpc.n.dwellir.com"
 asset_hub_ws = "wss://asset-hub-paseo-rpc.n.dwellir.com"
 

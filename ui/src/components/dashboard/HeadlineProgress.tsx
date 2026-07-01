@@ -22,6 +22,8 @@ interface Props {
 
 export function HeadlineProgress({ state, plan }: Props) {
 	const countdown = useCountdown(state?.relay.eraProgress.nextEraEta ?? null);
+	const golive = useCountdown(plan?.startsAt ?? null);
+	const waiting = !!plan?.startsAt && !!golive && !golive.elapsed;
 
 	if (!state) {
 		return (
@@ -63,15 +65,22 @@ export function HeadlineProgress({ state, plan }: Props) {
 						{plan?.eraHours ?? 6}h).
 					</CardDescription>
 				</div>
-				<Badge
-					variant={currentStep ? "default" : "outline"}
-					className="gap-1.5"
-				>
-					<Layers className="size-3" />
-					{currentStep
-						? `Step ${currentStep.id} · ${currentStep.status}`
-						: "No active step"}
-				</Badge>
+				{waiting ? (
+					<Badge variant="secondary" className="gap-1.5">
+						<Hourglass className="size-3 animate-pulse" />
+						Armed · go-live in {golive?.label}
+					</Badge>
+				) : (
+					<Badge
+						variant={currentStep ? "default" : "outline"}
+						className="gap-1.5"
+					>
+						<Layers className="size-3" />
+						{currentStep
+							? `Step ${currentStep.id} · ${currentStep.status}`
+							: "No active step"}
+					</Badge>
+				)}
 			</CardHeader>
 			<CardContent className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 				<Metric

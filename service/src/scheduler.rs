@@ -97,13 +97,30 @@ impl Scheduler {
 
         let abs_era = (snapshot.relay.session_index as u64 / SESSIONS_PER_ERA) as u32;
 
+        // Go-live gate: until the configured `start_at`, stay ARMED but never
+        // touch the chain (don't anchor the era clock, don't dispatch) — just
+        // serve the dashboard. Absolute timestamp => restart-safe.
+        let start_at = plan.meta.start_at_dt();
+        let waiting_for_golive = matches!(start_at, Some(t) if Utc::now() < t);
+
         // Publish snapshot + init the start-era anchor.
         {
             let mut inner = self.shared.inner.write();
             inner.snapshot = Some(snapshot.clone());
             inner.health_reasons = reasons.clone();
             inner.last_error = None;
-            if inner.persisted.start_era.is_none() {
+            // Anchor the display clock to start_at so timeline ETAs/countdowns
+            // are correct before go-live.
+            if let Some(t) = start_at {
+                inner.persisted.started_at = t.to_rfc3339();
+            }
+            // Anchor the era clock at go-live. While still holding for start_at,
+            // actively CLEAR any anchor (e.g. one left by a previous binary/run or
+            // a plain restart) so we always re-anchor FRESH when the time arrives —
+            // no manual state reset needed across restarts or binary swaps.
+            if waiting_for_golive {
+                inner.persisted.start_era = None;
+            } else if inner.persisted.start_era.is_none() {
                 inner.persisted.start_era = Some(abs_era);
             }
             // Record derived active step id.
@@ -111,6 +128,11 @@ impl Scheduler {
                 active_step(&plan, &snapshot).map(|s| s.id);
         }
         self.shared.persist();
+
+        if waiting_for_golive {
+            tracing::debug!(target: "sched", "armed; holding until go-live at {:?}", start_at);
+            return Ok(());
+        }
 
         let paused = self.shared.inner.read().persisted.paused;
 

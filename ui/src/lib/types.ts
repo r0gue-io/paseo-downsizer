@@ -120,6 +120,9 @@ export interface PlanStep {
 
 export interface Plan {
 	startedAt: string;
+	/** Go-live time (RFC3339); null = start immediately. Before it, the service
+	 * is armed but holding — the dashboard shows a countdown. */
+	startsAt: string | null;
 	eraHours: number;
 	/** null when no step is active yet (or all steps are done). */
 	currentStepId: number | null;

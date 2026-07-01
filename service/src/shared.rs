@@ -156,6 +156,7 @@ impl Shared {
 
         PlanView {
             started_at,
+            starts_at: plan.meta.start_at_dt().map(|t| t.to_rfc3339()),
             era_hours: plan.meta.era_hours,
             current_step_id: active_id,
             mode: plan.dispatch.mode.clone(),

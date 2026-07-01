@@ -92,6 +92,9 @@ pub struct Assignment {
 #[serde(rename_all = "camelCase")]
 pub struct PlanView {
     pub started_at: Iso8601,
+    /// Configured go-live time (RFC3339); null if starting immediately. Before
+    /// it, the service is armed but holding (dashboard shows a countdown).
+    pub starts_at: Option<Iso8601>,
     pub era_hours: u32,
     pub current_step_id: Option<u32>,
     pub mode: String,

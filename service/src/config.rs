@@ -28,6 +28,23 @@ pub struct Meta {
     pub era_hours: u32,
     #[serde(default = "default_soak")]
     pub soak_eras: u32,
+    /// Optional go-live timestamp (RFC3339, e.g. "2026-07-02T12:00:00+02:00").
+    /// Until this instant the service stays ARMED but does NOT touch the chain —
+    /// it just serves the dashboard. At/after it, the schedule anchors to the
+    /// current era and begins. Absolute, so it's restart-safe.
+    #[serde(default)]
+    pub start_at: Option<String>,
+}
+
+impl Meta {
+    /// Parsed go-live time, if configured and valid.
+    pub fn start_at_dt(&self) -> Option<chrono::DateTime<chrono::Utc>> {
+        self.start_at.as_deref().and_then(|s| {
+            chrono::DateTime::parse_from_rfc3339(s)
+                .ok()
+                .map(|dt| dt.with_timezone(&chrono::Utc))
+        })
+    }
 }
 
 fn default_soak() -> u32 {
