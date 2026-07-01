@@ -6,8 +6,10 @@ mod api;
 mod chain;
 mod config;
 mod dispatch;
+mod matrix;
 mod model;
 mod packing;
+mod providers;
 mod scheduler;
 mod shared;
 mod state;
@@ -106,12 +108,45 @@ async fn main() -> Result<()> {
         RunMode::Auto
     };
 
+    // Optional Matrix notifier: needs the local providers.toml + MATRIX_* env.
+    let providers = std::env::var("PROVIDERS_PATH")
+        .map(PathBuf::from)
+        .ok()
+        .or_else(|| plan_path.parent().map(|d| d.join("providers.toml")))
+        .filter(|p| p.exists())
+        .and_then(|p| match providers::Providers::load(&p) {
+            Ok(pr) => {
+                tracing::info!(target: "main", "loaded provider directory: {} providers", pr.providers.len());
+                Some(pr)
+            }
+            Err(e) => {
+                tracing::warn!(target: "main", "providers.toml load failed: {e:#}");
+                None
+            }
+        });
+    let matrix = matrix::Matrix::connect(
+        settings.matrix_homeserver.clone(),
+        settings.matrix_token.clone(),
+        settings.matrix_room.clone(),
+    )
+    .await
+    .unwrap_or_else(|e| {
+        tracing::warn!(target: "main", "matrix connect failed: {e:#}");
+        None
+    });
+    match (&matrix, &providers) {
+        (Some(_), Some(_)) => tracing::info!(target: "main", "matrix notifier enabled"),
+        _ => tracing::info!(target: "main", "matrix notifier disabled (needs MATRIX_* env + providers.toml)"),
+    }
+
     let scheduler = Scheduler {
         shared: shared.clone(),
         relay,
         ah,
         dispatcher,
         mode,
+        matrix,
+        providers,
     };
 
     match mode {

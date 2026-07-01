@@ -33,6 +33,10 @@ pub struct Scheduler {
     pub ah: ChainClient,
     pub dispatcher: Option<Dispatcher>,
     pub mode: RunMode,
+    /// Matrix notifier + provider directory (both required to post per-cycle
+    /// offboarding notices; None = notifications disabled).
+    pub matrix: Option<crate::matrix::Matrix>,
+    pub providers: Option<crate::providers::Providers>,
 }
 
 impl Scheduler {
@@ -322,6 +326,11 @@ impl Scheduler {
             }
         }
 
+        // Notify providers (Matrix) that this cycle just executed — tags each
+        // leaving provider with their exact validators. Best-effort; never blocks
+        // or fails the step.
+        self.notify_cycle(step, snapshot.relay.validators).await;
+
         // Success: record progress (advance is still validated from chain next tick).
         {
             let mut inner = self.shared.inner.write();
@@ -453,6 +462,29 @@ impl Scheduler {
                 .insert(step.id, Utc::now().to_rfc3339());
         }
         self.shared.persist();
+    }
+
+    /// Post the per-cycle offboarding notice to Matrix (best-effort — never
+    /// blocks or fails the step). Tags each leaving provider with their exact
+    /// validators for this cycle; skips the terminal shutdown step.
+    async fn notify_cycle(&self, step: &Step, from: u32) {
+        if step.shutdown {
+            return;
+        }
+        let (Some(matrix), Some(providers)) = (&self.matrix, &self.providers) else {
+            return;
+        };
+        match providers.cycle_notice(step.id, from, step.validators) {
+            Some((text, html)) => match matrix.post(&text, &html).await {
+                Ok(()) => {
+                    tracing::info!(target: "sched", "posted cycle {} offboarding notice to Matrix", step.id)
+                }
+                Err(e) => {
+                    tracing::warn!(target: "sched", "matrix notice for cycle {} failed: {e:#}", step.id)
+                }
+            },
+            None => tracing::debug!(target: "sched", "cycle {}: no tagged providers leaving", step.id),
+        }
     }
 
     /// Record a submitted atomic batch (one `utility.batch_all` transaction).

@@ -31,6 +31,7 @@ if [[ -d "$DASH" ]]; then
   cp -r "$DASH"/* /var/www/paseo-downsizer/
   echo "dashboard-> /var/www/paseo-downsizer"
 fi
+if [[ -f /tmp/providers.toml ]]; then cp /tmp/providers.toml /etc/paseo-downsizer/providers.toml; echo "providers -> /etc/paseo-downsizer/providers.toml"; fi
 if [[ -f "$PLAN" ]]; then
   cp "$PLAN" /etc/paseo-downsizer/downsizing-plan.toml
   echo "plan     -> /etc/paseo-downsizer/downsizing-plan.toml"

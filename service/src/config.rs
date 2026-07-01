@@ -163,6 +163,10 @@ pub struct Settings {
     pub ah_ws: String,
     pub control_token: Option<String>,
     pub bind_addr: String,
+    /// Matrix notifier (per-cycle offboarding posts). All three required to enable.
+    pub matrix_homeserver: Option<String>,
+    pub matrix_token: Option<String>,
+    pub matrix_room: Option<String>,
 }
 
 impl Settings {
@@ -177,6 +181,9 @@ impl Settings {
             ah_ws,
             control_token: env_opt("CONTROL_TOKEN"),
             bind_addr: std::env::var("BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:8080".to_string()),
+            matrix_homeserver: env_opt("MATRIX_HOMESERVER"),
+            matrix_token: env_opt("MATRIX_TOKEN"),
+            matrix_room: env_opt("MATRIX_ROOM"),
         }
     }
 }

@@ -24,6 +24,7 @@ echo "pushing to $VM ..."
 scp "$BIN"                       "$VM:/tmp/paseo-downsizer-service"
 scp -r "$OUT"                    "$VM:/tmp/dashboard"
 scp "$PLAN"                      "$VM:/tmp/downsizing-plan.toml"
+[[ -f "$ROOT/plan/providers.toml" ]] && scp "$ROOT/plan/providers.toml" "$VM:/tmp/providers.toml"
 scp "$ROOT/deploy/install-on-vm.sh" "$VM:/tmp/install-on-vm.sh"
 echo
 echo "Done. Now on the VM run:   sudo bash /tmp/install-on-vm.sh"
