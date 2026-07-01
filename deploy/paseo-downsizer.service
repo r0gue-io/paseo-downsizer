@@ -1,0 +1,37 @@
+[Unit]
+Description=Paseo relay downsizer — monitor + auto-dispatch service
+Documentation=https://github.com/r0gue-io/paseo-downsizer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=paseo
+Group=paseo
+WorkingDirectory=/var/lib/paseo-downsizer
+# Secrets (incl. PROXY_SURI) live here, root:root 600 — read by systemd (PID 1),
+# NOT world/paseo-readable. See deploy/service.env.example.
+EnvironmentFile=/etc/paseo-downsizer/service.env
+ExecStart=/usr/local/bin/paseo-downsizer-service --plan /etc/paseo-downsizer/downsizing-plan.toml
+Restart=on-failure
+RestartSec=5
+
+# --- hardening (this box holds a hot sudo-proxy key) ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+LockPersonality=true
+SystemCallArchitectures=native
+# state.json is written to the working dir:
+StateDirectory=paseo-downsizer
+ReadWritePaths=/var/lib/paseo-downsizer
+
+[Install]
+WantedBy=multi-user.target

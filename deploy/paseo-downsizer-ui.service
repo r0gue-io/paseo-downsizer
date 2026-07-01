@@ -1,0 +1,30 @@
+[Unit]
+Description=Paseo downsizer dashboard (Next.js)
+Documentation=https://github.com/r0gue-io/paseo-downsizer
+After=network-online.target paseo-downsizer.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=paseo
+Group=paseo
+WorkingDirectory=/opt/paseo-downsizer/ui
+Environment=NODE_ENV=production
+# node must be on PATH (Node >= 20). Adjust if node lives elsewhere.
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+# Bind to localhost only — Caddy terminates TLS and proxies to it.
+# NOTE: NEXT_PUBLIC_SERVICE_URL is baked at BUILD time (build with it set to ""
+# for same-origin /api). It is NOT read here at runtime.
+ExecStart=/opt/paseo-downsizer/ui/node_modules/.bin/next start -H 127.0.0.1 -p 3000
+Restart=on-failure
+RestartSec=5
+
+# --- hardening ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/paseo-downsizer/ui/.next
+
+[Install]
+WantedBy=multi-user.target

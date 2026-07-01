@@ -1,0 +1,24 @@
+# /etc/caddy/Caddyfile — reverse proxy + automatic HTTPS.
+# Replace downsizer.example.com with your domain (DNS A/AAAA -> this VM).
+# Caddy obtains + renews Let's Encrypt certs automatically.
+
+downsizer.example.com {
+	encode zstd gzip
+
+	# Read API (state/plan/history/health) is public. The mutating control
+	# endpoint (POST /api/control) is gated by CONTROL_TOKEN in the service.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	# Dashboard (Next.js) — everything else.
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# Optional: basic security headers for the dashboard.
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}
