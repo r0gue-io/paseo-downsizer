@@ -34,6 +34,11 @@ pub struct Meta {
     /// current era and begins. Absolute, so it's restart-safe.
     #[serde(default)]
     pub start_at: Option<String>,
+    /// Pre-downsize validator-set size. Informational only: used to render the
+    /// `from` count in the cycle-1 `--matrix-test` preview. The real per-cycle
+    /// notices always read the live count from chain, never this.
+    #[serde(default)]
+    pub start_validators: Option<u32>,
 }
 
 impl Meta {
@@ -141,6 +146,21 @@ impl Plan {
     /// All plan steps, in order (including the terminal shutdown step).
     pub fn enabled_steps(&self) -> Vec<&Step> {
         self.steps.iter().collect()
+    }
+
+    /// `(cycle_id, from, to)` validator counts for each non-shutdown step, for
+    /// rendering preview/smoke-test notices without a chain connection. `from` of
+    /// the first cycle uses `meta.start_validators` (falling back to that step's
+    /// own target if unset); each later cycle's `from` is the prior step's target.
+    pub fn preview_cycles(&self) -> Vec<(u32, u32, u32)> {
+        let mut out = Vec::new();
+        let mut prev = self.meta.start_validators;
+        for s in self.steps.iter().filter(|s| !s.shutdown) {
+            let from = prev.unwrap_or(s.validators);
+            out.push((s.id, from, s.validators));
+            prev = Some(s.validators);
+        }
+        out
     }
 
     /// The exit-cohort stashes (ss58 strings) for a given step id.

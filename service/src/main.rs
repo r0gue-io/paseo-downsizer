@@ -47,6 +47,18 @@ struct Cli {
     /// Simulate (dry-run) the next step without submitting, then exit.
     #[arg(long)]
     dry_run: bool,
+
+    /// Post the REAL per-cycle offboarding notice(s) to Matrix as a clearly-marked
+    /// PREVIEW, then exit. No chain connection, no dispatch — use to smoke-test the
+    /// notifier and show providers exactly what to expect. Needs providers.toml +
+    /// MATRIX_* env, same as the live notifier.
+    #[arg(long)]
+    matrix_test: bool,
+
+    /// With --matrix-test, limit the preview to a single cycle (1..4).
+    /// Default: preview every cycle that has tagged providers leaving.
+    #[arg(long)]
+    matrix_test_cycle: Option<u32>,
 }
 
 #[tokio::main]
@@ -71,6 +83,13 @@ async fn main() -> Result<()> {
 
     tracing::info!(target: "main", "plan '{}' loaded: {} enabled step(s), era={}h, soak={} era(s)",
         plan.meta.name, plan.enabled_steps().len(), plan.meta.era_hours, plan.meta.soak_eras);
+
+    // --matrix-test: render the real cycle notice(s) as a marked PREVIEW and post
+    // them, then exit. Deliberately BEFORE any chain connect — it touches no chain
+    // and dispatches nothing.
+    if cli.matrix_test {
+        return run_matrix_test(&plan, &plan_path, &settings, cli.matrix_test_cycle).await;
+    }
 
     // Connect both chains (reconnecting transport).
     let relay = ChainClient::connect("relay", &settings.relay_ws)
@@ -109,21 +128,7 @@ async fn main() -> Result<()> {
     };
 
     // Optional Matrix notifier: needs the local providers.toml + MATRIX_* env.
-    let providers = std::env::var("PROVIDERS_PATH")
-        .map(PathBuf::from)
-        .ok()
-        .or_else(|| plan_path.parent().map(|d| d.join("providers.toml")))
-        .filter(|p| p.exists())
-        .and_then(|p| match providers::Providers::load(&p) {
-            Ok(pr) => {
-                tracing::info!(target: "main", "loaded provider directory: {} providers", pr.providers.len());
-                Some(pr)
-            }
-            Err(e) => {
-                tracing::warn!(target: "main", "providers.toml load failed: {e:#}");
-                None
-            }
-        });
+    let providers = load_providers(&plan_path);
     let matrix = matrix::Matrix::connect(
         settings.matrix_homeserver.clone(),
         settings.matrix_token.clone(),
@@ -184,6 +189,88 @@ async fn main() -> Result<()> {
         }
     }
 
+    Ok(())
+}
+
+/// Load the local provider directory (`providers.toml`) from `PROVIDERS_PATH` or
+/// next to the plan. Returns `None` (notifications disabled) if absent/unparseable.
+fn load_providers(plan_path: &std::path::Path) -> Option<providers::Providers> {
+    std::env::var("PROVIDERS_PATH")
+        .map(PathBuf::from)
+        .ok()
+        .or_else(|| plan_path.parent().map(|d| d.join("providers.toml")))
+        .filter(|p| p.exists())
+        .and_then(|p| match providers::Providers::load(&p) {
+            Ok(pr) => {
+                tracing::info!(target: "main", "loaded provider directory: {} providers", pr.providers.len());
+                Some(pr)
+            }
+            Err(e) => {
+                tracing::warn!(target: "main", "providers.toml load failed: {e:#}");
+                None
+            }
+        })
+}
+
+/// Render the real per-cycle offboarding notice(s) and post them to Matrix as a
+/// clearly-marked PREVIEW, then return. Exercises the exact live path
+/// (`providers.cycle_notice` + `Matrix::post`) but touches no chain and dispatches
+/// nothing. `only` limits to a single cycle id.
+async fn run_matrix_test(
+    plan: &Plan,
+    plan_path: &std::path::Path,
+    settings: &Settings,
+    only: Option<u32>,
+) -> Result<()> {
+    let providers = load_providers(plan_path).ok_or_else(|| {
+        anyhow::anyhow!(
+            "providers.toml not found/loadable (next to the plan or via PROVIDERS_PATH); \
+             cannot render cycle notices"
+        )
+    })?;
+    let matrix = matrix::Matrix::connect(
+        settings.matrix_homeserver.clone(),
+        settings.matrix_token.clone(),
+        settings.matrix_room.clone(),
+    )
+    .await
+    .context("connecting Matrix for --matrix-test")?
+    .ok_or_else(|| {
+        anyhow::anyhow!("Matrix not configured — set MATRIX_HOMESERVER, MATRIX_TOKEN, MATRIX_ROOM")
+    })?;
+
+    // Unmistakable preview banner so the room never mistakes this for a live event.
+    let banner_text = "🧪 PREVIEW / SMOKE TEST — NOT a live downsizing event. This is a \
+        sample of the notice you'll receive when this cycle actually executes.\n\n";
+    let banner_html = "<b>🧪 PREVIEW / SMOKE TEST — NOT a live downsizing event.</b> This is a \
+        sample of the notice you'll receive when this cycle actually executes.<br/><br/>";
+
+    let mut posted = 0u32;
+    for (cycle, from, to) in plan.preview_cycles() {
+        if only.is_some_and(|c| c != cycle) {
+            continue;
+        }
+        match providers.cycle_notice(cycle, from, to) {
+            Some((text, html)) => {
+                matrix
+                    .post(&format!("{banner_text}{text}"), &format!("{banner_html}{html}"))
+                    .await
+                    .with_context(|| format!("posting preview for cycle {cycle}"))?;
+                tracing::info!(target: "matrix-test", "posted preview for cycle {cycle} ({from} → {to})");
+                posted += 1;
+            }
+            None => tracing::info!(
+                target: "matrix-test",
+                "cycle {cycle}: no tagged providers leave — nothing to preview"
+            ),
+        }
+    }
+    if posted == 0 {
+        tracing::warn!(target: "matrix-test",
+            "no preview posted (cycle {:?} has no tagged providers, or no cycles matched)", only);
+    } else {
+        tracing::info!(target: "matrix-test", "✓ posted {posted} preview notice(s) — check the room");
+    }
     Ok(())
 }
 

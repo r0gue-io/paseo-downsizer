@@ -106,6 +106,20 @@ curl -s localhost:8080/api/health              # {"status":"ok","dispatcher":"id
   ```
   Expect the per-item and `utility.batch_all` dry-runs to pass (or fail only on
   `Proxy::NotProxy` if that account isn't actually a delegate of the sudo key).
+- **Smoke-test the Matrix notifier** — first prove the transport
+  (`deploy/matrix-selftest.sh --join`), then preview the *real* offboarding
+  notices. `--matrix-test` posts the actual per-cycle notice for every cycle to
+  the room, clearly marked as a PREVIEW; it makes no chain connection and
+  dispatches nothing, so providers can see exactly what to expect:
+  ```bash
+  sudo bash -c 'set -a; source /etc/paseo-downsizer/service.env; set +a; \
+    /usr/local/bin/paseo-downsizer-service \
+      --plan /etc/paseo-downsizer/downsizing-plan.toml --matrix-test'
+  # one cycle only: add --matrix-test-cycle 1
+  ```
+  Needs `providers.toml` beside the plan and the `MATRIX_*` env (same as the live
+  notifier). The `from → to` counts come from the plan (`start_validators` for
+  cycle 1); live notices use the real on-chain count.
 
 ## 6. Arm it — go-live is automatic at `start_at`
 

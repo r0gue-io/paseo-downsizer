@@ -31,6 +31,9 @@ asset_hub_ws = "wss://asset-hub-paseo-rpc.n.dwellir.com"
 era_hours = 6
 # One step per era (each step waits 1 era of healthy finality after the previous).
 soak_eras = 1
+# Pre-downsize validator-set size. Informational: used ONLY to render the `from`
+# count in the cycle-1 `--matrix-test` preview. Live notices read the real count.
+start_validators = 152
 
 [dispatch]
 # proxy.proxy(real = sudo_account, force_proxy_type = None, sudo.sudo(inner))
