@@ -79,7 +79,7 @@ so nothing goes dark — chains just produce blocks more slowly:
 | **Parachain teams** | Your chain keeps producing at a **slower, steadier cadence** during downsizing. At **T+48h it stops permanently** with the relay. | **Redeploy / register on the new chain before shutdown.** Contact us if you need a larger core share or more time |
 | **Parachain users** | Slower confirmations on affected chains; Asset Hub near-normal. Old chain unusable after T+48h. | Move activity to the new chain before shutdown |
 | **Validators staying (the floor 20)** | You remain in the active set to the end; backing groups get slightly larger. At shutdown you stop your node on the coordinated signal. | Keep your node healthy; **stop it at the shutdown signal** |
-| **Validators being offboarded** | **Chilled first (no slashing)**, then rotate out at an era boundary. After that your node is no longer an authority. | We contact your cohort with timing. Do **not** stop your node until we confirm it has rotated out |
+| **Validators being offboarded** | **Cleanly removed (force-unstaked, no slashing)**, then rotate out at an era boundary. After that your node is no longer an authority. | We contact your cohort with timing. Do **not** stop your node until we confirm it has rotated out |
 | **RPC / infra operators** | Old-chain endpoints serve until shutdown, then can be decommissioned / repointed to the new chain. | Plan endpoint cutover for T+48h |
 
 **No unplanned downtime.** The only scheduled outage is the **deliberate shutdown
@@ -99,7 +99,7 @@ on the dashboard); it does not — and cannot — stop operators' nodes for them
 ## Safety summary
 
 - Validator removals happen **only at era boundaries**; offboarded nodes are
-  **chilled (never slashed)** and decommissioned only **after** they leave the set.
+  **cleanly removed (never slashed)** and decommissioned only **after** they leave the set.
 - Finality (GRANDPA) needs >2/3 of the active set online; group size stays at 5,
   and the schedule **auto-pauses** if finality lag or online headroom degrades.
 - Every governance call is **dry-run before submission** and applied **atomically**

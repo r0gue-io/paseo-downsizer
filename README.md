@@ -9,7 +9,7 @@ blocks at a lower cadence — then hold at the floor for a ~24h grace window and
 
 Finality-safe by construction: steps land only at era boundaries, the schedule
 soaks and auto-pauses on any finality/health breach, and offboarded validators are
-chilled (never slashed) and only decommissioned after they rotate out.
+cleanly removed (never slashed) and only decommissioned after they rotate out.
 
 ## Components
 
@@ -26,8 +26,9 @@ chilled (never slashed) and only decommissioned after they rotate out.
 All dispatched as `proxy.proxy(real = sudo, sudo.sudo(inner))`, signed by a proxy
 delegate key (`PROXY_SURI`, env only). A **SafeSudo** delegate suffices.
 
-1. **Validators** — Asset Hub `staking_async.set_validator_count` (+ `chill_other`
-   for the exit cohort). Post-AHM, the set is elected on AH.
+1. **Validators** — Asset Hub `staking_async.set_validator_count` (+
+   `force_unstake` per exit-cohort stash to force exactly who leaves; Root-safe).
+   Post-AHM, the set is elected on AH.
 2. **Min set size** — relay `parameters.set_parameter(AhClient::MinimumValidatorSetSize)`
    (dynamic param, default 100). Lowered first so sub-100 sets aren't dropped.
 3. **Cores + packing** — relay `coretime.request_core_count` and

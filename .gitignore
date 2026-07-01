@@ -22,3 +22,7 @@ ui/.papi
 
 # local share bundles (regenerate from docs/)
 *.zip
+
+# named cohort data — kept local, deployed via scp, NOT public
+/plan/providers.toml
+/plan/*.local.toml

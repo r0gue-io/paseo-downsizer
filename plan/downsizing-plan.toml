@@ -102,9 +102,12 @@ min_validator_set_size = 16
 shutdown = true
 note = "T+48h. TERMINAL: coordinated network shutdown — operators stop nodes."
 
-# --- Exit cohort (which providers leave, per step) -------------------------
-# Optional AH stash lists; chilled one era before their cut so the RIGHT providers
-# leave (else staking drops by weight). Populate from paseo-action-submission.
+# --- Exit cohort (which validators leave, per step) ------------------------
+# AH stash lists; each is removed via staking.force_unstake(stash) (Root/sudo,
+# verified) inside the step's atomic batch, so EXACTLY these validators exit and
+# the rest stay (vs the election dropping by stake). Left EMPTY here on purpose:
+# the named per-provider cohorts are kept OUT of this public repo and deployed to
+# the VM via downsizing-plan.local.toml (see deploy/push-artifacts.sh).
 [exit_cohort]
 step_1 = []
 step_2 = []

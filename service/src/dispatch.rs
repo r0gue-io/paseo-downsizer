@@ -49,7 +49,10 @@ pub struct Resolved {
     pub ah_sudo_pallet: String,
     pub staking_pallet: String,
     pub set_validator_count_call: String,
-    pub chill_other_call: String,
+    /// Root-dispatchable per-validator removal (verified via DryRunApi). Used to
+    /// force EXACTLY the exit cohort out — `chill_other` needs a Signed origin so
+    /// it can't run via our sudo/Root path; `force_unstake` can.
+    pub force_unstake_call: String,
     pub ah_utility_pallet: String,
     /// The live timeslice period (constant), used to compute `assign_core` begin.
     pub timeslice_period: u32,
@@ -124,7 +127,7 @@ impl Dispatcher {
         let staking_pallet = pallet_with_call(&ah_md, "set_validator_count")
             .unwrap_or_else(|| "Staking".into());
         let set_validator_count_call = "set_validator_count".to_string();
-        let chill_other_call = "chill_other".to_string();
+        let force_unstake_call = "force_unstake".to_string();
         let ah_utility_pallet =
             pallet_with_call(&ah_md, "batch_all").unwrap_or_else(|| "Utility".into());
 
@@ -144,7 +147,7 @@ impl Dispatcher {
             ah_sudo_pallet,
             staking_pallet,
             set_validator_count_call,
-            chill_other_call,
+            force_unstake_call,
             ah_utility_pallet,
             timeslice_period,
         };
@@ -153,7 +156,7 @@ impl Dispatcher {
             "resolved metadata calls: relay proxy={}.proxy sudo={}.sudo params={}.set_parameter coretime={}.{{request_core_count,assign_core}}; AH proxy={}.proxy sudo={}.sudo staking={}.{{{},{}}}; timeslice_period={}",
             resolved.proxy_pallet, resolved.sudo_pallet, resolved.parameters_pallet, resolved.coretime_pallet,
             resolved.ah_proxy_pallet, resolved.ah_sudo_pallet, resolved.staking_pallet,
-            resolved.set_validator_count_call, resolved.chill_other_call, resolved.timeslice_period);
+            resolved.set_validator_count_call, resolved.force_unstake_call, resolved.timeslice_period);
 
         Ok(Dispatcher {
             signer,
@@ -347,15 +350,19 @@ impl Dispatcher {
         )
     }
 
-    fn chill_other_item(&self, stash: &AccountId32) -> DispatchItem {
+    /// `staking.force_unstake(stash, num_slashing_spans=0)` on Asset Hub —
+    /// deterministically removes a specific validator from the elected set at the
+    /// next era. Root-dispatchable (verified via DryRunApi), so it rides our
+    /// proxy.proxy(sudo.sudo(..)) path like everything else.
+    fn force_unstake_item(&self, stash: &AccountId32) -> DispatchItem {
         let inner = Self::runtime_call(
             &self.resolved.staking_pallet,
-            &self.resolved.chill_other_call,
-            vec![account_value(stash)],
+            &self.resolved.force_unstake_call,
+            vec![account_value(stash), Value::u128(0)],
         );
         self.wrap(
             ChainKind::AssetHub,
-            format!("{}.{}", self.resolved.staking_pallet, self.resolved.chill_other_call),
+            format!("{}.{}", self.resolved.staking_pallet, self.resolved.force_unstake_call),
             format!("stash={stash}"),
             inner,
         )
@@ -397,7 +404,7 @@ impl Dispatcher {
             let stash: AccountId32 = stash_ss58
                 .parse()
                 .with_context(|| format!("parsing exit-cohort stash {stash_ss58}"))?;
-            ah.push(self.chill_other_item(&stash));
+            ah.push(self.force_unstake_item(&stash));
         }
 
         Ok((relay, ah))

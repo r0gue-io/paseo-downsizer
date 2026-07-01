@@ -51,7 +51,7 @@ call: Sudo.sudo { call: <inner> } }`, signed by the **proxy delegate key**
 | Lever | Chain | Inner call (resolve exact name from metadata at startup) |
 |---|---|---|
 | Validator count | Asset Hub | `staking_async.set_validator_count(n)` (a.k.a. staking set_validator_count) |
-| Exit cohort | Asset Hub | `staking_async.chill_other(stash)` per exit stash (1 era before the cut) |
+| Exit cohort | Asset Hub | `staking_async.force_unstake(stash, 0)` per exit stash — Root-safe (verified); `chill_other` needs Signed so can't run via sudo |
 | Min set size | Relay | `parameters.set_parameter(AhClient::MinimumValidatorSetSize(n))` |
 | Core count | Relay | `coretime.request_core_count(n)` (runtime_parachains coretime) |
 | Packing | Relay | `coretime.assign_core(core, begin, [(CoreAssignment::Task(paraId), PartsOf57600)...], end_hint=None)` |
@@ -152,7 +152,7 @@ reconcile with `/api/state`.
 - **Scheduler loop:** on each new relay block, recompute era progress; when the
   active step's era boundary is reached AND soak satisfied AND health OK, build
   the step's calls (min-size → core-count → packing on relay; validatorCount +
-  chills on AH), dry-run all, then submit via proxy+sudo. Record to history.
+  force_unstakes on AH), dry-run all, then submit via proxy+sudo. Record to history.
   Advance `currentStepId` only after the chain reflects the targets.
 - **Idempotent / crash-safe:** derive current step from observed chain state on
   startup; never re-issue a target already met. Re-assert packing if the broker

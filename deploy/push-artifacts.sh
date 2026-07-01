@@ -11,7 +11,9 @@ VM="${1:?usage: deploy/push-artifacts.sh <ssh-host>   (e.g. rai or user@1.2.3.4)
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BIN="$ROOT/service/target/release/paseo-downsizer-service"
 OUT="$ROOT/ui/out"
-PLAN="$ROOT/plan/downsizing-plan.toml"
+# Prefer the local (gitignored) plan carrying the named exit cohorts; fall back
+# to the public plan (empty cohorts) if it's absent.
+PLAN="$ROOT/plan/downsizing-plan.local.toml"; [[ -f "$PLAN" ]] || PLAN="$ROOT/plan/downsizing-plan.toml"
 
 [[ -x "$BIN" ]]           || { echo "!! missing binary: $BIN  (run cargo build --release && strip)"; exit 1; }
 [[ -f "$OUT/index.html" ]]|| { echo "!! missing static UI: $OUT  (run: cd ui && NEXT_PUBLIC_SERVICE_URL='' pnpm build)"; exit 1; }

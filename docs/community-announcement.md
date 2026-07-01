@@ -71,8 +71,8 @@ shows the current schedule.*
 - Move your activity and testing to the new chain before shutdown.
 
 **🛡️ Validators**
-- If you're being offboarded: you'll be **chilled first (no slashing)** and rotate
-  out cleanly at an era boundary. **Don't stop your node until we confirm** you've
+- If you're being offboarded: you'll be **cleanly removed (force-unstaked, no
+  slashing)** at an era boundary. **Don't stop your node until we confirm** you've
   rotated out.
 - If you're in the final group of 20: keep running to the end, then **stop your
   node on the coordinated shutdown signal**.
