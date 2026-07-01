@@ -1,0 +1,130 @@
+# Paseo relay downsizing plan — SOURCE OF TRUTH for the planned schedule.
+#
+# The service reads this file for INTENT (targets + weights) and reads the CHAIN
+# for STATE. It never hardcodes on-chain values; every number here is a *target*
+# the service drives the chain toward, one step per era (6h).
+#
+# GOAL / BALANCE: downsize the current relay AS FAST AS THE ERA CLOCK ALLOWS
+# (one change per 6h era) to free budget for the parallel replacement chain, hold
+# briefly at a minimal floor so users/parachains can migrate, then SHUT DOWN.
+#   - Phase 1 (Downsize, ~24h): 152 -> 20 validators over 4 eras, cores 56 -> 4.
+#   - Phase 2 (Grace, 24h): hold at 20 val / 4 cores (eras 4->8) — chains stay
+#     alive (slower) so late migrants aren't cut off.
+#   - Phase 3 (Shutdown, T+48h): terminal. Validator operators STOP their nodes;
+#     the chain halts (there is no on-chain "stop the network" call — "0
+#     validators" is the operational shutdown, not a validatorCount value).
+#
+# Baseline observed on-chain 2026-07-01 (spec 2_003_001):
+#   validators = 152, cores = 56, ah_client.mode = Active, MinimumValidatorSetSize
+#   = 100 (dynamic-param default), ~31 active paras across 45 cores (AH 1000 on 3).
+
+[meta]
+name = "paseo-relay-downsizing"
+# Intended start: Thursday 2 July 2026, 12:00 CEST (10:00 UTC). era_offsets below
+# are relative to when the service is started, so launch it at that time.
+# Milestones: floor(20) Fri 3 Jul 12:00 CEST · shutdown Sat 4 Jul 12:00 CEST.
+relay_ws = "wss://paseo-rpc.n.dwellir.com"
+asset_hub_ws = "wss://asset-hub-paseo-rpc.n.dwellir.com"
+
+era_hours = 6
+# One step per era (each step waits 1 era of healthy finality after the previous).
+soak_eras = 1
+
+[dispatch]
+# proxy.proxy(real = sudo_account, force_proxy_type = None, sudo.sudo(inner))
+# Each step is applied ATOMICALLY as one utility.batch_all per chain.
+mode = "auto"
+dry_run_first = true
+require_healthy_finality = true
+
+[health]
+max_finality_lag_blocks = 10  # best - finalized; GRANDPA stall detector (wiggle room)
+min_online_fraction = 0.80    # finality-derived estimate; the lag gate is authoritative
+
+# --- Phase 1: fast downsize to the floor (one step per era, ~24h) ----------
+# Group size = validators/cores held at 5 for backing/approval security.
+# MinimumValidatorSetSize lowered to 16 in step 1 (<= floor of 20) so every
+# sub-100 set below is accepted rather than dropped.
+
+[[step]]
+id = 1
+era_offset = 1
+validators = 100
+cores = 20
+min_validator_set_size = 16
+note = "T+6h. 100/20 = groups of 5. Lower min-size to 16 now for all later cuts."
+
+[[step]]
+id = 2
+era_offset = 2
+validators = 60
+cores = 12
+min_validator_set_size = 16
+note = "T+12h. 60/12 = groups of 5."
+
+[[step]]
+id = 3
+era_offset = 3
+validators = 40
+cores = 8
+min_validator_set_size = 16
+note = "T+18h. 40/8 = groups of 5."
+
+[[step]]
+id = 4
+era_offset = 4
+validators = 20
+cores = 4
+min_validator_set_size = 16
+note = "T+24h. FLOOR. 20/4 = groups of 5. ~8 paras time-shared per core."
+
+# --- Phase 2: grace / transition hold --------------------------------------
+# No step between era 4 (floor) and era 8 (shutdown): the scheduler simply holds
+# at 20/4 for 24h while users migrate. The packing re-assert keeps all paras
+# placed so parachains keep producing (slowly) throughout the window.
+# To extend the grace window to 48h, change the shutdown step's era_offset to 12.
+
+# --- Phase 3: terminal shutdown --------------------------------------------
+# `shutdown = true` marks a TERMINAL milestone: the service does NOT dispatch a
+# reduction (there is no on-chain stop). When its era is reached it logs the
+# shutdown notice and the dashboard shows the shutdown block/time; the actual
+# kill is validator operators stopping nodes (see docs/provider-communication.md
+# and the shutdown runbook). validators/cores below are informational (the floor).
+
+[[step]]
+id = 5
+era_offset = 8
+validators = 20
+cores = 4
+min_validator_set_size = 16
+shutdown = true
+note = "T+48h. TERMINAL: coordinated network shutdown — operators stop nodes."
+
+# --- Exit cohort (which providers leave, per step) -------------------------
+# Optional AH stash lists; chilled one era before their cut so the RIGHT providers
+# leave (else staking drops by weight). Populate from paseo-action-submission.
+[exit_cohort]
+step_1 = []
+step_2 = []
+step_3 = []
+step_4 = []
+
+# --- Core packing -----------------------------------------------------------
+# Deterministic split computed from the LIVE active paras + these weights; parts
+# per core sum to exactly 57600. Asset Hub gets its own core while one is free
+# (it runs staking-async — it DRIVES the downsize). At the floor (4 cores) ~8
+# paras share each core; block time ~= 6s / share.
+[packing]
+max_chains_per_core = 8        # floor packs ~31 paras onto 4 cores
+hard_max_chains_per_core = 12
+default_weight = 5
+
+[packing.weights]
+"1000" = 100                   # Asset Hub — dedicated core while one is free
+"1002" = 20                    # Bridge Hub
+"1004" = 20                    # People
+"1005" = 20                    # Coretime
+"1001" = 20                    # Collectives
+"1500" = 10                    # testnet para
+"1501" = 10
+"1502" = 10

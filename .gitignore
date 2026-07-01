@@ -1,0 +1,24 @@
+# Rust
+/service/target
+**/*.rs.bk
+
+# state / secrets
+state.json
+*.sqlite
+.env
+.env.local
+*.suri
+
+# Node / Next
+node_modules/
+/ui/.next
+/ui/out
+/ui/.turbo
+ui/.papi
+
+# misc
+.DS_Store
+*.log
+
+# local share bundles (regenerate from docs/)
+*.zip

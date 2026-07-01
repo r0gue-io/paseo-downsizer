@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 460" width="880" height="460" role="img" aria-label="Paseo relay validator schedule">
+  
+  <rect x="0" y="0" width="880" height="460" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="64" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" fill="#0f172a" text-anchor="start" font-weight="700">Paseo relay — validator wind-down</text>
+  <text x="64" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" fill="#94a3b8" text-anchor="start" font-weight="400">Starts Thu 2 Jul 2026, 12:00 CEST · 152 → 20 over ~24h, ~24h migration window, then coordinated shutdown</text>
+  <rect x="64" y="64" width="344.88888888888886" height="322" fill="#eef2ff"/>
+  <rect x="408.88888888888886" y="64" width="344.88888888888886" height="322" fill="#fff7ed"/>
+  <line x1="64" y1="386" x2="840" y2="386" stroke="#eef2f7"/>
+  <text x="54" y="390" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">0</text>
+  <line x1="64" y1="345.75" x2="840" y2="345.75" stroke="#eef2f7"/>
+  <text x="54" y="349.75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">20</text>
+  <line x1="64" y1="305.5" x2="840" y2="305.5" stroke="#eef2f7"/>
+  <text x="54" y="309.5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">40</text>
+  <line x1="64" y1="265.25" x2="840" y2="265.25" stroke="#eef2f7"/>
+  <text x="54" y="269.25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">60</text>
+  <line x1="64" y1="225" x2="840" y2="225" stroke="#eef2f7"/>
+  <text x="54" y="229" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">80</text>
+  <line x1="64" y1="184.75" x2="840" y2="184.75" stroke="#eef2f7"/>
+  <text x="54" y="188.75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">100</text>
+  <line x1="64" y1="144.5" x2="840" y2="144.5" stroke="#eef2f7"/>
+  <text x="54" y="148.5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">120</text>
+  <line x1="64" y1="104.25" x2="840" y2="104.25" stroke="#eef2f7"/>
+  <text x="54" y="108.25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">140</text>
+  <line x1="64" y1="64" x2="840" y2="64" stroke="#eef2f7"/>
+  <text x="54" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="end" font-weight="400">160</text>
+  <line x1="64" y1="386" x2="64" y2="391" stroke="#94a3b8"/>
+  <text x="64" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+0h</text>
+  <line x1="150.22222222222223" y1="386" x2="150.22222222222223" y2="391" stroke="#94a3b8"/>
+  <text x="150.22222222222223" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+6h</text>
+  <line x1="236.44444444444443" y1="386" x2="236.44444444444443" y2="391" stroke="#94a3b8"/>
+  <text x="236.44444444444443" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+12h</text>
+  <line x1="322.66666666666663" y1="386" x2="322.66666666666663" y2="391" stroke="#94a3b8"/>
+  <text x="322.66666666666663" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+18h</text>
+  <line x1="408.88888888888886" y1="386" x2="408.88888888888886" y2="391" stroke="#94a3b8"/>
+  <text x="408.88888888888886" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+24h</text>
+  <line x1="495.11111111111114" y1="386" x2="495.11111111111114" y2="391" stroke="#94a3b8"/>
+  <text x="495.11111111111114" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+30h</text>
+  <line x1="581.3333333333333" y1="386" x2="581.3333333333333" y2="391" stroke="#94a3b8"/>
+  <text x="581.3333333333333" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+36h</text>
+  <line x1="667.5555555555555" y1="386" x2="667.5555555555555" y2="391" stroke="#94a3b8"/>
+  <text x="667.5555555555555" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+42h</text>
+  <line x1="753.7777777777777" y1="386" x2="753.7777777777777" y2="391" stroke="#94a3b8"/>
+  <text x="753.7777777777777" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+48h</text>
+  <line x1="840" y1="386" x2="840" y2="391" stroke="#94a3b8"/>
+  <text x="840" y="406" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="400">+54h</text>
+  <path d="M 64 80.10000000000002 L 150.22222222222223 80.10000000000002 L 150.22222222222223 184.75 L 236.44444444444443 184.75 L 236.44444444444443 265.25 L 322.66666666666663 265.25 L 322.66666666666663 305.5 L 408.88888888888886 305.5 L 408.88888888888886 345.75 L 753.7777777777777 345.75 L 753.7777777777777 345.75 L 753.7777777777777 386 L 64 386 Z" fill="#4f46e51a"/>
+  <path d="M 64 80.10000000000002 L 150.22222222222223 80.10000000000002 L 150.22222222222223 184.75 L 236.44444444444443 184.75 L 236.44444444444443 265.25 L 322.66666666666663 265.25 L 322.66666666666663 305.5 L 408.88888888888886 305.5 L 408.88888888888886 345.75 L 753.7777777777777 345.75 L 753.7777777777777 345.75" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+  <circle cx="64" cy="80.10000000000002" r="3.5" fill="#4f46e5"/>
+  <text x="64" y="70.10000000000002" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">152</text>
+  <circle cx="150.22222222222223" cy="184.75" r="3.5" fill="#4f46e5"/>
+  <text x="150.22222222222223" y="174.75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">100</text>
+  <circle cx="236.44444444444443" cy="265.25" r="3.5" fill="#4f46e5"/>
+  <text x="236.44444444444443" y="255.25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">60</text>
+  <circle cx="322.66666666666663" cy="305.5" r="3.5" fill="#4f46e5"/>
+  <text x="322.66666666666663" y="295.5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">40</text>
+  <circle cx="408.88888888888886" cy="345.75" r="3.5" fill="#4f46e5"/>
+  <text x="408.88888888888886" y="335.75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">20</text>
+  <line x1="753.7777777777777" y1="345.75" x2="753.7777777777777" y2="386" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="5 4"/>
+  <circle cx="753.7777777777777" cy="386" r="4" fill="#ef4444"/>
+  <text x="761.7777777777777" y="378" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#ef4444" text-anchor="start" font-weight="700">0 — network halts</text>
+  <text x="236.44444444444443" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle" font-weight="700">DOWNSIZE  ~24h</text>
+  <text x="581.3333333333333" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#c2680f" text-anchor="middle" font-weight="700">GRACE  ~24h</text>
+  <text x="753.7777777777777" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#ef4444" text-anchor="middle" font-weight="700">SHUTDOWN</text>
+  <text x="64" y="426" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle" font-weight="700">Thu 2 Jul</text>
+  <text x="64" y="439" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle" font-weight="400">12:00 CEST</text>
+  <text x="408.88888888888886" y="426" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle" font-weight="700">Fri 3 Jul</text>
+  <text x="408.88888888888886" y="439" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle" font-weight="400">12:00 CEST</text>
+  <text x="753.7777777777777" y="426" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle" font-weight="700">Sat 4 Jul</text>
+  <text x="753.7777777777777" y="439" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle" font-weight="400">12:00 CEST</text>
+  <text x="18" y="225" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#475569" text-anchor="middle" transform="rotate(-90 18 225)">Active validators</text>
+</svg>
